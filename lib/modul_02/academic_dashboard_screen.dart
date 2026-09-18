@@ -14,9 +14,7 @@ class AcademicDashboardScreen extends StatefulWidget {
 
 class _AcademicDashboardScreenState
     extends State<AcademicDashboardScreen> {
-  // Data jadwal praktikum hari ini.
-  // Kita tetap menggunakan model Course yang sudah ada,
-  // jadi tidak perlu membuat file/model baru.
+  // Data praktikum hari ini
   final List<Course> _practicums = const [
     Course(
       code: '08.00 – 10.00',
@@ -26,14 +24,16 @@ class _AcademicDashboardScreenState
       progress: 0,
       room: 'Lab 1',
     ),
+
     Course(
       code: '10.00 – 12.00',
       name: 'Rekayasa Perangkat Lunak',
-      lecturer: 'Belum dimulai',
+      lecturer: 'Akan datang',
       sks: 0,
       progress: 0,
       room: 'Lab 2',
     ),
+
     Course(
       code: '13.00 – 15.00',
       name: 'Basis Data',
@@ -42,13 +42,14 @@ class _AcademicDashboardScreenState
       progress: 0,
       room: 'Lab 3',
     ),
+
     Course(
       code: '15.00 – 17.00',
       name: 'Lab 2',
-      lecturer: 'Belum dimulai',
+      lecturer: 'Tersedia',
       sks: 0,
       progress: 0,
-      room: 'Lab Komputer',
+      room: 'Ruang tersedia',
     ),
   ];
 
@@ -72,6 +73,9 @@ class _AcademicDashboardScreenState
         useMaterial3: true,
       ),
       child: Scaffold(
+        // ============================================
+        // APP BAR
+        // ============================================
         appBar: AppBar(
           title: const Text(
             'Ruang Praktikum Hari Ini',
@@ -81,60 +85,83 @@ class _AcademicDashboardScreenState
           ),
           actions: [
             IconButton(
+              onPressed: _toggleDarkMode,
+              tooltip: _isDarkMode
+                  ? 'Mode Terang'
+                  : 'Mode Gelap',
               icon: Icon(
                 _isDarkMode
                     ? Icons.light_mode_rounded
                     : Icons.dark_mode_rounded,
               ),
-              tooltip: _isDarkMode
-                  ? 'Mode Terang'
-                  : 'Mode Gelap',
-              onPressed: _toggleDarkMode,
             ),
           ],
         ),
 
+        // ============================================
+        // BODY RESPONSIVE
+        // ============================================
         body: LayoutBuilder(
           builder: (context, constraints) {
-            // ==================================
+            // ========================================
             // TABLET / DESKTOP
-            // ==================================
-            if (constraints.maxWidth >= 600) {
-              return Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    const HeaderBanner(),
+            // ========================================
+           if (constraints.maxWidth >= 600) {
+  return Center(
+    child: ConstrainedBox(
+      constraints: const BoxConstraints(
+        maxWidth: 1100,
+      ),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(
+          24,
+          20,
+          24,
+          20,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const HeaderBanner(),
 
-                    const SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-                    Expanded(
-                      child: GridView.builder(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
-                          childAspectRatio: 1.65,
-                        ),
-                        itemCount: _practicums.length,
-                        itemBuilder: (context, index) {
-                          return CourseCard(
-                            course: _practicums[index],
-                          );
-                        },
+            LayoutBuilder(
+              builder: (context, gridConstraints) {
+                final cardWidth =
+                    (gridConstraints.maxWidth - 14) / 2;
+
+                return Wrap(
+                  spacing: 14,
+                  runSpacing: 14,
+                  children: _practicums.map((practicum) {
+                    return SizedBox(
+                      width: cardWidth,
+                      height: 200,
+                      child: CourseCard(
+                        course: practicum,
                       ),
-                    ),
-                  ],
-                ),
-              );
-            }
-
-            // ==================================
+                    );
+                  }).toList(),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+            // ========================================
             // SMARTPHONE
-            // ==================================
+            // ========================================
             return ListView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(
+                16,
+                20,
+                16,
+                20,
+              ),
               children: [
                 const HeaderBanner(),
 

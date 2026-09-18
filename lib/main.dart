@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/modul_02/academic_dashboard_screen.dart';
+import 'modul_02/academic_dashboard_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,4 +22,4 @@ class MyApp extends StatelessWidget {
       home: const AcademicDashboardScreen(),
     );
   }
-}
+}  

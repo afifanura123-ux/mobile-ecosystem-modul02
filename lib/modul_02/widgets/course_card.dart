@@ -12,15 +12,15 @@ class CourseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final status = course.lecturer;
 
     return Card(
       margin: EdgeInsets.zero,
-      elevation: 1,
+      elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(
-          color: theme.colorScheme.outlineVariant,
+        borderRadius: BorderRadius.circular(15),
+        side: const BorderSide(
+          color: Color(0xFFDDE3EA),
         ),
       ),
       child: Padding(
@@ -28,7 +28,9 @@ class CourseCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Nama praktikum + status
+            // =========================
+            // JUDUL + STATUS
+            // =========================
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -38,7 +40,7 @@ class CourseCard extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                      fontSize: 15,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -46,114 +48,46 @@ class CourseCard extends StatelessWidget {
 
                 const SizedBox(width: 8),
 
-                _StatusBadge(
-                  status: course.lecturer,
-                ),
+                _StatusBadge(status: status),
               ],
             ),
 
             const SizedBox(height: 12),
 
-            // Waktu
-            Row(
-              children: [
-                Icon(
-                  Icons.access_time_outlined,
-                  size: 17,
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-                const SizedBox(width: 7),
-                Text(
-                  course.code,
-                  style: TextStyle(
-                    color: theme.colorScheme.onSurfaceVariant,
-                    fontSize: 13,
-                  ),
-                ),
-              ],
+            // =========================
+            // WAKTU
+            // =========================
+            _DetailRow(
+              icon: Icons.access_time_outlined,
+              text: course.code,
             ),
 
             const SizedBox(height: 7),
 
-            // Ruangan
-            Row(
-              children: [
-                Icon(
-                  Icons.location_on_outlined,
-                  size: 17,
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-                const SizedBox(width: 7),
-                Text(
-                  course.room,
-                  style: TextStyle(
-                    color: theme.colorScheme.onSurfaceVariant,
-                    fontSize: 13,
-                  ),
-                ),
-              ],
+            // =========================
+            // RUANGAN
+            // =========================
+            _DetailRow(
+              icon: Icons.location_on_outlined,
+              text: course.room,
             ),
 
             const SizedBox(height: 12),
 
-            // Keterangan
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    _statusIcon(course.lecturer),
-                    size: 17,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  const SizedBox(width: 7),
-                  Expanded(
-                    child: Text(
-                      _statusText(course.lecturer),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            // =========================
+            // STATUS DETAIL
+            // =========================
+            _StatusBox(status: status),
           ],
         ),
       ),
     );
   }
-
-  IconData _statusIcon(String status) {
-    if (status == 'Sedang digunakan') {
-      return Icons.groups_outlined;
-    }
-
-    if (status == 'Selesai') {
-      return Icons.check_circle_outline;
-    }
-
-    return Icons.access_time_outlined;
-  }
-
-  String _statusText(String status) {
-    if (status == 'Sedang digunakan') {
-      return 'Sedang digunakan oleh praktikan';
-    }
-
-    if (status == 'Selesai') {
-      return 'Sesi telah selesai';
-    }
-
-    return 'Sesi akan dimulai sebentar lagi';
-  }
 }
+
+// ======================================================
+// STATUS BADGE
+// ======================================================
 
 class _StatusBadge extends StatelessWidget {
   final String status;
@@ -164,24 +98,156 @@ class _StatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    Color background;
+    Color textColor;
+    String text;
+
+    if (status == 'Sedang digunakan') {
+      background = const Color(0xFF168BD2);
+      textColor = Colors.white;
+      text = 'Berlangsung';
+    } else if (status == 'Selesai') {
+      background = const Color(0xFFE3E6EA);
+      textColor = const Color(0xFF374151);
+      text = 'Selesai';
+    } else if (status == 'Tersedia') {
+      background = const Color(0xFF38A879);
+      textColor = Colors.white;
+      text = 'Tersedia';
+    } else {
+      background = const Color(0xFFFFE7B0);
+      textColor = const Color(0xFF8A5700);
+      text = 'Akan datang';
+    }
 
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: 9,
-        vertical: 5,
+        horizontal: 11,
+        vertical: 6,
       ),
       decoration: BoxDecoration(
-        color: theme.colorScheme.primaryContainer,
-        borderRadius: BorderRadius.circular(10),
+        color: background,
+        borderRadius: BorderRadius.circular(18),
       ),
       child: Text(
-        status,
+        text,
         style: TextStyle(
+          color: textColor,
           fontSize: 10,
           fontWeight: FontWeight.w600,
-          color: theme.colorScheme.onPrimaryContainer,
         ),
+      ),
+    );
+  }
+}
+
+// ======================================================
+// DETAIL ROW
+// ======================================================
+
+class _DetailRow extends StatelessWidget {
+  final IconData icon;
+  final String text;
+
+  const _DetailRow({
+    required this.icon,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const SizedBox(
+          width: 24,
+          child: Icon(
+            Icons.access_time_outlined,
+            size: 20,
+            color: Color(0xFF374151),
+          ),
+        ),
+        const SizedBox(width: 5),
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontSize: 13,
+              color: Color(0xFF374151),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ======================================================
+// STATUS BOX
+// ======================================================
+
+class _StatusBox extends StatelessWidget {
+  final String status;
+
+  const _StatusBox({
+    required this.status,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    Color background;
+    Color iconColor;
+    IconData icon;
+    String text;
+
+    if (status == 'Sedang digunakan') {
+      background = const Color(0xFFE3F2FD);
+      iconColor = const Color(0xFF1479B8);
+      icon = Icons.groups_outlined;
+      text = 'Sedang digunakan\noleh praktikan';
+    } else if (status == 'Selesai') {
+      background = const Color(0xFFF0F3F6);
+      iconColor = const Color(0xFF374151);
+      icon = Icons.check_circle_outline;
+      text = 'Sesi telah selesai';
+    } else if (status == 'Tersedia') {
+      background = const Color(0xFFE1F5EB);
+      iconColor = const Color(0xFF23845E);
+      icon = Icons.meeting_room_outlined;
+      text = 'Siap digunakan\nuntuk praktikum lain';
+    } else {
+      background = const Color(0xFFFFF5DD);
+      iconColor = const Color(0xFF795000);
+      icon = Icons.access_time_outlined;
+      text = 'Sesi akan dimulai\nsebentar lagi';
+    }
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 10,
+      ),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(11),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            icon,
+            size: 25,
+            color: iconColor,
+          ),
+          const SizedBox(width: 12),
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 12,
+              color: iconColor,
+              height: 1.3,
+            ),
+          ),
+        ],
       ),
     );
   }
