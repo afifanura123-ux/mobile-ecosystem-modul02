@@ -1,125 +1,187 @@
 import 'package:flutter/material.dart';
+
 import '../models/course.dart';
 
 class CourseCard extends StatelessWidget {
   final Course course;
 
-  const CourseCard({super.key, required this.course});
+  const CourseCard({
+    super.key,
+    required this.course,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Card(
-      elevation: 2,
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      // Pakai Stack agar badge SKS bisa menimpa pojok kanan atas kartu
-      child: Stack(
-        children: [
-          // Konten utama kartu
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
+      margin: EdgeInsets.zero,
+      elevation: 1,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: theme.colorScheme.outlineVariant,
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Nama praktikum + status
+            Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  course.code,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.primary,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.8,
+                Expanded(
+                  child: Text(
+                    course.name,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-                const SizedBox(height: 6),
 
-                // Batasi judul maksimal 2 baris agar tinggi kartu tetap konsisten
-                Text(
-                  course.name,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 10),
+                const SizedBox(width: 8),
 
-                // Info dosen pengampu
-                Row(
-                  children: [
-                    Icon(Icons.person_outline, size: 16, color: theme.colorScheme.onSurfaceVariant),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        course.lecturer,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-
-                // Ruang kelas/lab
-                Row(
-                  children: [
-                    Icon(Icons.meeting_room_outlined, size: 16, color: theme.colorScheme.onSurfaceVariant),
-                    const SizedBox(width: 6),
-                    Text(
-                      course.room,
-                      style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                    ),
-                  ],
-                ),
-                const Spacer(),
-
-                // Progress bar silabus
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Progres Sesi', style: theme.textTheme.labelSmall),
-                        Text(
-                          '${(course.progress * 100).toInt()}%',
-                          style: theme.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    LinearProgressIndicator(
-                      value: course.progress,
-                      borderRadius: BorderRadius.circular(4),
-                      minHeight: 6,
-                    ),
-                  ],
+                _StatusBadge(
+                  status: course.lecturer,
                 ),
               ],
             ),
-          ),
 
-          // Badge SKS di pojok kanan atas
-          Positioned(
-            top: 12,
-            right: 12,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                '${course.sks} SKS',
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: theme.colorScheme.onPrimaryContainer,
-                  fontWeight: FontWeight.bold,
+            const SizedBox(height: 12),
+
+            // Waktu
+            Row(
+              children: [
+                Icon(
+                  Icons.access_time_outlined,
+                  size: 17,
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
+                const SizedBox(width: 7),
+                Text(
+                  course.code,
+                  style: TextStyle(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 7),
+
+            // Ruangan
+            Row(
+              children: [
+                Icon(
+                  Icons.location_on_outlined,
+                  size: 17,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 7),
+                Text(
+                  course.room,
+                  style: TextStyle(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 12),
+
+            // Keterangan
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    _statusIcon(course.lecturer),
+                    size: 17,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 7),
+                  Expanded(
+                    child: Text(
+                      _statusText(course.lecturer),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  IconData _statusIcon(String status) {
+    if (status == 'Sedang digunakan') {
+      return Icons.groups_outlined;
+    }
+
+    if (status == 'Selesai') {
+      return Icons.check_circle_outline;
+    }
+
+    return Icons.access_time_outlined;
+  }
+
+  String _statusText(String status) {
+    if (status == 'Sedang digunakan') {
+      return 'Sedang digunakan oleh praktikan';
+    }
+
+    if (status == 'Selesai') {
+      return 'Sesi telah selesai';
+    }
+
+    return 'Sesi akan dimulai sebentar lagi';
+  }
+}
+
+class _StatusBadge extends StatelessWidget {
+  final String status;
+
+  const _StatusBadge({
+    required this.status,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 9,
+        vertical: 5,
+      ),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primaryContainer,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        status,
+        style: TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.w600,
+          color: theme.colorScheme.onPrimaryContainer,
+        ),
       ),
     );
   }

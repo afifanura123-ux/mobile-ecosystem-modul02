@@ -14,7 +14,43 @@ class AcademicDashboardScreen extends StatefulWidget {
 
 class _AcademicDashboardScreenState
     extends State<AcademicDashboardScreen> {
-  final List<Course> _courses = Course.getSampleCourses();
+  // Data jadwal praktikum hari ini.
+  // Kita tetap menggunakan model Course yang sudah ada,
+  // jadi tidak perlu membuat file/model baru.
+  final List<Course> _practicums = const [
+    Course(
+      code: '08.00 – 10.00',
+      name: 'Mobile Programming',
+      lecturer: 'Sedang digunakan',
+      sks: 0,
+      progress: 0,
+      room: 'Lab 1',
+    ),
+    Course(
+      code: '10.00 – 12.00',
+      name: 'Rekayasa Perangkat Lunak',
+      lecturer: 'Belum dimulai',
+      sks: 0,
+      progress: 0,
+      room: 'Lab 2',
+    ),
+    Course(
+      code: '13.00 – 15.00',
+      name: 'Basis Data',
+      lecturer: 'Selesai',
+      sks: 0,
+      progress: 0,
+      room: 'Lab 3',
+    ),
+    Course(
+      code: '15.00 – 17.00',
+      name: 'Lab 2',
+      lecturer: 'Belum dimulai',
+      sks: 0,
+      progress: 0,
+      room: 'Lab Komputer',
+    ),
+  ];
 
   bool _isDarkMode = false;
 
@@ -38,11 +74,11 @@ class _AcademicDashboardScreenState
       child: Scaffold(
         appBar: AppBar(
           title: const Text(
-            'Dashboard Akademik TRPL',
-            style: TextStyle(fontWeight: FontWeight.bold),
+            'Ruang Praktikum Hari Ini',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
           ),
-          backgroundColor: const Color(0xFF0284C7),
-          foregroundColor: Colors.white,
           actions: [
             IconButton(
               icon: Icon(
@@ -50,8 +86,9 @@ class _AcademicDashboardScreenState
                     ? Icons.light_mode_rounded
                     : Icons.dark_mode_rounded,
               ),
-              tooltip:
-                  _isDarkMode ? 'Mode Terang' : 'Mode Gelap',
+              tooltip: _isDarkMode
+                  ? 'Mode Terang'
+                  : 'Mode Gelap',
               onPressed: _toggleDarkMode,
             ),
           ],
@@ -59,38 +96,31 @@ class _AcademicDashboardScreenState
 
         body: LayoutBuilder(
           builder: (context, constraints) {
-            // Tablet / Desktop: 2 kolom
+            // ==================================
+            // TABLET / DESKTOP
+            // ==================================
             if (constraints.maxWidth >= 600) {
               return Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                padding: const EdgeInsets.all(20),
+                child: Column(
                   children: [
-                    // Kolom kiri: banner profil
-                    const Expanded(
-                      flex: 2,
-                      child: SingleChildScrollView(
-                        child: HeaderBanner(),
-                      ),
-                    ),
+                    const HeaderBanner(),
 
-                    const SizedBox(width: 20),
+                    const SizedBox(height: 16),
 
-                    // Kolom kanan: daftar mata kuliah
                     Expanded(
-                      flex: 3,
                       child: GridView.builder(
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
                           crossAxisSpacing: 16,
                           mainAxisSpacing: 16,
-                          childAspectRatio: 1.4,
+                          childAspectRatio: 1.65,
                         ),
-                        itemCount: _courses.length,
+                        itemCount: _practicums.length,
                         itemBuilder: (context, index) {
                           return CourseCard(
-                            course: _courses[index],
+                            course: _practicums[index],
                           );
                         },
                       ),
@@ -100,7 +130,9 @@ class _AcademicDashboardScreenState
               );
             }
 
-            // Smartphone: 1 kolom
+            // ==================================
+            // SMARTPHONE
+            // ==================================
             return ListView(
               padding: const EdgeInsets.all(16),
               children: [
@@ -108,18 +140,15 @@ class _AcademicDashboardScreenState
 
                 const SizedBox(height: 16),
 
-                Text(
-                  'Mata Kuliah Semester 5 (${_courses.length} Terdaftar)',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                ..._practicums.map(
+                  (practicum) => Padding(
+                    padding: const EdgeInsets.only(
+                      bottom: 12,
+                    ),
+                    child: CourseCard(
+                      course: practicum,
+                    ),
                   ),
-                ),
-
-                const SizedBox(height: 12),
-
-                ..._courses.map(
-                  (course) => CourseCard(course: course),
                 ),
               ],
             );

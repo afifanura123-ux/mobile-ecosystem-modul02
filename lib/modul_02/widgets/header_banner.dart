@@ -1,14 +1,7 @@
 import 'package:flutter/material.dart';
 
 class HeaderBanner extends StatelessWidget {
-  final String studentName;
-  final String nim;
-
-  const HeaderBanner({
-    super.key,
-    this.studentName = 'Afifa Nur Fitria',
-    this.nim = '362558302034',
-  });
+  const HeaderBanner({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,92 +9,39 @@ class HeaderBanner extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF0284C7), Color(0xFF0369A1)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF0284C7).withValues(alpha: 0.3),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
-          ),
-        ],
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outlineVariant,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Text(
-                  'Semester 5 (2026/2027)',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              const Icon(
-                Icons.notifications_active_outlined,
-                color: Colors.white,
-                size: 20,
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          Text(
-            'Selamat Datang, $studentName ($nim)',
-            style: const TextStyle(
-              color: Colors.white70,
-              fontSize: 13,
-            ),
-          ),
-          const SizedBox(height: 4),
+          // Judul
           const Text(
-            'Dashboard Akademik & Proyek',
+            'Ruang Praktikum Hari Ini',
             style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
+              fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 16),
 
-          // Solusi aman: Gunakan SingleChildScrollView horizontal untuk membungkus Row
-          const SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                _StatPill(
-                  icon: Icons.task_alt,
-                  label: '4 Matakuliah',
-                ),
-                SizedBox(width: 8),
-                _StatPill(
-                  icon: Icons.grade,
-                  label: 'IPK 3.85',
-                ),
-                SizedBox(width: 8),
-                _StatPill(
-                  icon: Icons.calendar_month,
-                  label: '100% Hadir',
-                ),
-              ],
-            ),
+          const SizedBox(height: 12),
+
+          // Ringkasan
+          Row(
+            children: [
+              _InfoItem(
+                icon: Icons.calendar_today_outlined,
+                text: '3 sesi',
+              ),
+              const SizedBox(width: 20),
+              _InfoItem(
+                icon: Icons.meeting_room_outlined,
+                text: '1 ruang tersedia',
+              ),
+            ],
           ),
         ],
       ),
@@ -109,45 +49,33 @@ class HeaderBanner extends StatelessWidget {
   }
 }
 
-class _StatPill extends StatelessWidget {
+class _InfoItem extends StatelessWidget {
   final IconData icon;
-  final String label;
+  final String text;
 
-  const _StatPill({
+  const _InfoItem({
     required this.icon,
-    required this.label,
+    required this.text,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 10,
-        vertical: 5,
-      ),
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            size: 14,
-            color: Colors.white,
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          icon,
+          size: 16,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+        const SizedBox(width: 5),
+        Text(
+          text,
+          style: const TextStyle(
+            fontSize: 12,
           ),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
